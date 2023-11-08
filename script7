@@ -1,0 +1,59 @@
+--Crear la base de datos
+create database Agenda
+go
+use Agenda 
+--Crear la tabla contactos
+create table Contactos (
+	Id_contacto int identity (10, 2) constraint pk_Id_conctactos primary key,
+	Nombre varchar (25),
+	Apellidos varchar (50), 
+	DNI char (10), 
+	Telefono char (12),
+	Ecorreo varchar (50),
+	Fechacumple date constraint ck_Fechacumple check (Fechacumple < '1/1/2010') null,
+	Direccion varchar (50), 
+	Poblacion varchar (50),
+	Provincia int,
+	Codpostal char (5) constraint df_Codpostal default '38700',
+	Categoria char (4)
+);
+--Modificar con alter table 
+alter table Contactos
+alter column DNI char (10);
+
+alter table Contactos
+alter column Telefono char (12);
+
+exec sp_rename 'Contactos.CodPostal', 'CodigoPostal';
+
+--Crear la tabla "Categorias"
+create table Categorias(
+    Categoria char (4) constraint pk_Categoria primary key,
+    Descripcion varchar (50),
+);
+--Crear la tabla "Provincias"
+create table Provincias (
+    Provincia int identity (0, 5) constraint pk_Provincia primary key,
+    NombreProvincia varchar (40) constraint uq_NombreProvincia unique,
+    TamanioProvincia numeric (10, 2) constraint ck_TamanioProvincia check (TamanioProvincia > 100)
+);
+--Modificar la tabla "Contactos" para hacer que los campos sean requeridos (NOT NULL)
+alter table contactos
+alter column Nombre varchar(25) not null;
+
+alter table CONTACTOS
+alter column Apellidos varchar(50) not null;
+
+alter table CONTACTOS
+alter column Categoria char(4) not null;
+--Establecer claves foráneas en la tabla "Contactos"
+alter table Contactos
+add constraint fk_Categoria foreign key (Categoria) references Categorias (Categoria);
+
+alter table Contactos
+add constraint fk_Provincia foreign key (Provincia) references Provincias (Provincia);
+--Modificar en la tabla "Provincias"
+exec sp_rename 'Provincias.TamanioProvincia', 'metrosProvincia'; --Da error porque participa en dependencias forzadas, supongo que por el constraint de check
+
+alter table Provincias
+add constraint df_TamanioProvincia default 2000 for TamanioProvincia;
