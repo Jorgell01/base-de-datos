@@ -1,0 +1,138 @@
+create database BDResidenciasEscolares;
+go
+use BDResidenciasEscolares;
+go
+
+-- Elimina las tablas si existen
+IF OBJECT_ID('dbo.estancias') is not null
+    DROP TABLE dbo.estancias;
+
+IF OBJECT_ID('dbo.estudiantes') is not null
+    DROP TABLE dbo.estudiantes;
+
+IF OBJECT_ID('dbo.residencias') is not null
+    DROP TABLE dbo.residencias;
+
+IF OBJECT_ID('dbo.universidades') is not null
+    DROP TABLE dbo.universidades;
+
+-- Tabla Universidades
+CREATE TABLE universidades (
+    codUniversidad char(6) CONSTRAINT pk_codUniversidad PRIMARY KEY,
+    nomUniversidad varchar(30)
+);
+
+-- Tabla Residencias
+CREATE TABLE residencias (
+    codResidencia int IDENTITY(1,1) CONSTRAINT pk_codResidencia PRIMARY KEY,
+    nomResidencia varchar(30) NOT NULL,
+    codUniversidad char(6) CONSTRAINT fk_codUniversidad REFERENCES Universidades(codUniversidad),
+    precioMensual int NULL,
+    comedor bit
+);
+
+-- Tabla Estudiantes
+CREATE TABLE estudiantes (
+    codEstudiante int CONSTRAINT pk_codEstudiante PRIMARY KEY,
+    nomEstudiante varchar(50) NOT NULL,
+    dni char(9),
+    telefono char(9),
+);
+
+-- Tabla Estancias
+CREATE TABLE estancias (
+    codEstudiante INT,
+    codResidencia INT,
+    fechaInicio DATE,
+    fechaFin DATE,
+    preciopagado INT,
+    CONSTRAINT pk_Estancias PRIMARY KEY (codEstudiante, codResidencia, fechaInicio),
+    CONSTRAINT fk_codEstudiante FOREIGN KEY (codEstudiante) REFERENCES Estudiantes (codEstudiante),
+    CONSTRAINT fk_codResidencia FOREIGN KEY (codResidencia) REFERENCES Residencias (codResidencia)
+);
+
+-- Sobre la Base de datos BDResidenciasEscolares:
+-- Añade a la tabla universidades:
+-- Sede de hasta 60 caracteres,
+alter table universidades add sede varchar(60)
+
+-- Teléfono de 9 caracteres, asegurarse que todos los caracteres sean dígitos
+alter table universidades add telefono char(9) check (telefono like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]')
+
+-- En tabla residencias:
+--precioMensual ponerle valor por defecto 900, el valor estará entre 50 y 2000
+-- Valor por defecto 900
+ALTER TABLE residencias
+ADD CONSTRAINT DF_precioMensual DEFAULT 900 FOR precioMensual;
+-- precio entre 50 y 2 000
+ALTER TABLE residencias
+ADD CONSTRAINT CHK_precioMensual CHECK (precioMensual >= 50 AND precioMensual <= 2000);
+
+-- Comedor , valor por defecto 0
+ALTER TABLE residencias
+ADD CONSTRAINT DF_comedor DEFAULT 0 FOR comedor;
+
+-- Añade el atributo cantidadPlazas, numérico entero, no nulo, el valor estará entre 1 y 1000
+ALTER TABLE residencias
+ADD cantidadPlazas INT NOT NULL CHECK (cantidadPlazas >= 1 AND cantidadPlazas <= 1000);
+
+-- Añade nombreDirector de hasta 40 caracteres si permite nulo
+ALTER TABLE residencias
+ADD nombreDirector VARCHAR(40) NULL;
+
+-- Añade el atributo genero de 9 caracteres, posibles valores a tomar ( mixto, masculino, femenino ). Valor por defecto mixto
+ALTER TABLE residencias
+ADD genero CHAR(9) DEFAULT 'mixto' 
+
+ALTER TABLE residencias
+ADD CONSTRAINT CK_genero CHECK (genero IN ('mixto', 'masculino', 'femenino'));
+-- genero = 'mixto' or genero = 'masculino' or genero = 'femenino'
+
+--En tabla estudiantes
+--dni valor único,
+ALTER TABLE estudiantes
+ADD CONSTRAINT UC_dni UNIQUE (dni);
+
+--teléfono Estudiante valor único, no permite nulo, y solo digitos
+alter table estudiantes alter column telefono char(9) not null
+alter table estudiantes add constraint CK_telefonoEstudiante check (telefono like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]')
+alter table estudiantes add constraint uq_telefonoEstudiantes unique(telefono)
+
+--añade el campo correo de hasta 30 caracteres,
+alter table estudiantes add correo varchar(30)
+
+--añade el campo dirección de hasta 60 caracteres, permite nulo
+alter table estudiantes add direccion varchar(60) null
+
+--añade el campo sexo que será 1 carácter y posibles valores M o F
+alter table estudiantes add sexo char(1)
+alter table estudiantes add constraint ck_sexo check ( sexo in('M', 'F'))
+
+-- Tabla estancias
+-- Añade un campo observaciones de tipo text que permite nulo
+alter table estancias add observaciones text null
+-- Añade un campo numhabitacion de tipo tinyint con valor 0 por defecto
+alter table estancias
+add numhabitacion tinyint constraint df_numhabitacion default '0'
+
+--Otras acciones:
+--elimina el campo dirección de la tabla estudiantes
+alter table estudiantes
+drop column direccion
+--modifica el nombre del campo sede de la tabla universidades por dirección
+exec sp_rename 'universidades.sede', 'direccion'
+--elimina el campo dirección de la tabla universidades
+alter table universidades
+drop column direccion
+--modifica el nombre del campo correo de la tabla estudiantes por email
+exec sp_rename 'estudiantes.correo', 'email'
+--Establece todas las claves foráneas.
+-- tabla residencias
+alter table residencias
+add constraint FK_residenciaUniversidad foreign key (codUniversidad) references universidades(codUniversidad)
+-- tabla estancias
+alter table estancias
+add constraint FK_estanciasEstudiantes foreign key (codEstudiante) references estudiantes(codEstudiante);
+--estancias
+alter table estancias
+add constraint FK_estanciasResidencias foreign key (codResidencia) references residencias(codResidencia); 
