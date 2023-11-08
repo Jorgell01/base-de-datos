@@ -1,0 +1,63 @@
+--1.- Inserta una provincia con numhabitantes con su valor por defecto, hazlo de dos maneras diferentes.
+INSERT INTO Provincias (codProvincia, nomProvincia, Pais) VALUES (8, 'Pamplona', 'ES');
+INSERT INTO Provincias (codProvincia, nomProvincia, numHabitantes, Pais) VALUES (7, 'Sevilla', DEFAULT, 'ES');
+--2.- Modifica el nombre de provincia y el numhabitantes de la provincia con codigo X 
+UPDATE Provincias
+SET nomProvincia = 'Yow', numHabitantes = 500000
+WHERE codProvincia = 2;
+--3.- Sumale 10 a todos los habitantes de todas las provincias del país con codigo X
+UPDATE Provincias
+SET numHabitantes = numHabitantes + 10
+WHERE Pais = 'US';
+--4.- Realiza una copia de la tabla provincias con todos sus datos, llamala copia_provincias
+SELECT *
+INTO copia_provincias
+FROM Provincias;
+--5.- Elimina en la tabla copia_provincias aquellos registros que tengan menos de x habitantes
+DELETE FROM copia_provincias
+WHERE numHabitantes < 3600000;
+--6.- Elimina todos los registros de la tabla copia_provincias.
+DELETE FROM copia_provincias;
+--7.- Carga la tabla copia_provincias con todos los datos que tiene la tabla provincias.
+INSERT INTO copia_provincias
+SELECT *
+FROM Provincias;
+--8.- Elimina todos los registros de la tabla copia_provincias de otra forma. Vuelve a rellenar la tabla copia_provincias con todos los datos de la tabla provincias
+TRUNCATE TABLE copia_provincias;
+INSERT INTO copia_provincias
+SELECT *
+FROM Provincias;
+--9.- Inserta un cliente con teléfono y categoría con valor null en la tabla clientes
+INSERT INTO Clientes (nomCliente, telefono, codProvincia, categoria) VALUES ('Joe Mama', NULL, 3, NULL);
+--10.- Inserta un cliente con teléfono y categoría con valor por defecto en la tabla clientes
+INSERT INTO Clientes (nomCliente, telefono, codProvincia, categoria) VALUES ('Yolanda', DEFAULT, 2, DEFAULT);
+--11.- Modifica el nombre del cliente con codigo X
+UPDATE Clientes
+SET nomCliente = 'Manolo'
+WHERE codCliente = 5;
+--12.- A todos los clientes que tengan categoría null asignarles la categoría C 
+UPDATE Clientes
+SET categoria = 'C'
+WHERE categoria IS NULL;
+--13.- Inserta un cliente con categoría al valor null
+INSERT INTO Clientes (nomCliente, telefono, codProvincia, categoria) VALUES ('Cliente Nulo', '12345678902', 1, NULL);
+--14.- Elimina todos los clientes que tengan la categoría a valor null
+DELETE FROM Clientes
+WHERE categoria IS NULL;
+--15.-En la tabla provincias descuenta a numhabitantes 5 a la provincia con codigo X
+UPDATE Provincias
+SET numHabitantes = numHabitantes - 5
+WHERE codProvincia = 3;
+--16.- En la tabla provincias aumenta el 10% a numhabitantes del país con codigo X
+UPDATE Provincias
+SET numHabitantes = numHabitantes * 1.1
+WHERE Pais = 'ES';
+--17.- En la tabla provincias modifica el nombre de la provincia y el país a la provincia con codigo X
+UPDATE Provincias
+SET nomProvincia = 'Ramadan', Pais = 'ES'
+WHERE codProvincia = 6;
+--18.- En la tabla pagos modifica la cantidad pagada de un determinado préstamo y fecha de pago.
+UPDATE Pagos
+SET cantidadPagada = 160.00
+WHERE codPrestamo = 'P01' AND fechaPago = '2023-01-15';
+select * from Pagos
