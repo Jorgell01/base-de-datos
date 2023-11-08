@@ -1,0 +1,76 @@
+--1 A la tabla contactos añádele una restricción al código postal que todos los caracteres solo sean dígitos y siempre 5 dígitos
+alter table Contactos add constraint ck_CodigoPostal check (CodigoPostal Like '[0-5][0-5][0-5][0-5][0-5]')
+--2 Igual al teléfono pero 9 dígitos
+alter table Contactos add constraint ck_Telefono check (Telefono Like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]')
+--3 Añade a contactos un campo llamado deuda que sea numérico como máximo tendrá 5 dígitos enteros y 2 decimales, con valor por defecto 0 y nunca podrá ser un número negativo
+alter table Contactos add deuda numeric (7,2) constraint df_deuda default '0' constraint ck_deuda check (deuda >=0)
+--4 Inserta 5 registros en cada tabla
+insert into Categorias (Categoria, Descripcion) values
+	('FAM', 'Familia'),
+    ('AMG', 'Amigos'),
+    ('TRA', 'Trabajo'),
+    ('ESC', 'Escuela'),
+    ('PUB', 'Público');
+insert into Provincias (NombreProvincia, TamanioProvincia) values
+	('Madrid', 8020.55),
+    ('Barcelona', 7714.21),
+    ('Valencia', 10807.36),
+    ('Sevilla', 14036.29),
+    ('Alicante', 5817.93);
+insert into Contactos (Nombre, Apellidos, DNI, Telefono, Ecorreo, Fechacumple, Direccion, Poblacion, Provincia, CodigoPostal, Categoria, deuda) values
+	('Juan', 'Pérez', '123456789A', '551234567', 'juan@example.com', '2000-05-15', 'Calle A, 123', 'Madrid', 0, '34500', 'FAM', 100.00),
+	('María', 'González', '987654321B', '559876543', 'maria@example.com', '2001-02-20', 'Calle B, 456', 'Barcelona', 5, '33001', 'AMG', 50.00),
+	('Luis', 'López', '567890123C', '555678901', 'luis@example.com', '1999-08-10', 'Calle C, 789', 'Valencia', 10, '32002', 'TRA', 0.00),
+	('Ana', 'Martínez', '432109876D', '554321098', 'ana@example.com', '2003-11-30', 'Calle D, 234', 'Sevilla', 15, '35003', 'ESC', 75.50),
+	('Pedro', 'Sánchez', '210987654E', '552109876', 'pedro@example.com', '1998-07-05', 'Calle E, 567', 'Alicante', 20, '31004', 'PUB', 200.25);
+--5 Inserta un contacto con código postal a1234
+insert into Contactos (Nombre, Apellidos, DNI, Telefono, Ecorreo, Fechacumple, Direccion, Poblacion, Provincia, CodigoPostal, Categoria, deuda) values
+	('Ejemplo', 'Error', '1234567890', '555123456', 'ejemplo@example.com', '2000-05-15', 'Calle X, 123', 'Ciudad', 1, 'a1234');
+--6 Inserta un contacto con deuda -100
+insert into Contactos (Nombre, Apellidos, DNI, Telefono, Ecorreo, Fechacumple, Direccion, Poblacion, Provincia, CodigoPostal, Categoria, deuda) values
+	('Ejemplo', 'Error', '1234567890', '551234567', 'ejemplo@example.com', '2000-05-15', 'Calle X, 123', 'Ciudad', 1, '32002', 'TRA', -100);
+--7 Inserta un contacto con el valor de deuda el de por defecto
+insert into Contactos (Nombre, Apellidos, DNI, Telefono, Ecorreo, Fechacumple, Direccion, Poblacion, Provincia, CodigoPostal, Categoria, deuda) values
+	('Ejemplo', 'Defecto', '1234567890', '551234567', 'ejemplo@example.com', '2000-05-15', 'Calle X, 123', 'Ciudad', 15, '35003', 'ESC', default );
+--8 Asígnale al código postal un valor por defecto de 38000
+alter table Contactos drop constraint df_CodPostal
+alter table Contactos add constraint df_CodigoPostal default '38000' for CodigoPostal
+--9 Inserta un contacto con fecha de cumple 10/10/2010 (que ocurre)
+insert into Contactos (Nombre, Apellidos, DNI, Telefono, Ecorreo, Fechacumple, Direccion, Poblacion, Provincia, CodigoPostal, Categoria, deuda) values
+	('Pepe', 'Putero', '1234567890', '555123456', 'peponcio@gmail.com', '10-10-2010', 'Calle Pepe, 33', 'Madrid', 0, '34500', 'FAM', 240.00);
+--10Inserta un contacto poniendo la fecha del cumple el día actual, para ello utiliza la función getdate()
+alter table Contactos drop constraint ck_Fechacumple
+insert into Contactos (Nombre, Apellidos, DNI, Telefono, Ecorreo, Fechacumple, Direccion, Poblacion, Provincia, CodigoPostal, Categoria, deuda) values
+	('Ejemplo', 'FechaActual', '1234567890', '555123456', 'peponcio@gmail.com', getdate(), 'Calle Pepe, 33', 'Sevilla', 15, '34500', 'PUB', 240.00);
+--11 Modifica al contacto x la fecha de cumple
+update Contactos
+set Fechacumple = '15-10-2010'
+where Nombre = 'Pepe' and Apellidos = 'Putero';
+--12 Modíficale al contacto x la provincia , la categoría y el código postal
+update Contactos
+set Provincia = 5, Categoria = 'AMG', CodigoPostal = '32002'
+where Nombre = 'Ejemplo' AND Apellidos = 'FechaActual';
+--13 A todos los contactos de la categoría X descuéntales la deuda en un 20 %, pero solo a los que tengan alguna deuda, si la deuda es 0 a esos no le descuentes nada
+update Contactos
+set Deuda = Deuda * 0.8
+where Categoria = 'FAM' AND Deuda > 0;
+--14 Crea la tabla contactos_copia que tendrá la misma estructura que la tabla contactos y no tendrá ningún registro
+select*into Contactos_copia from Contactos
+--15 Insertale los contactos que están en la tabla contactos los que no tengan deuda.
+insert into Contactos_copia select * from Contactos where Deuda = 0;
+--16 Visualiza de la tabla contactos_copia aquellos que pertenezcan a la categoria x o y. Para ello usa la sentencia
+select * from Contactos_copia where Categoria = 'FAM' or Categoria = 'AMG';
+--17. Elimina de la tabla contactos _copia aquellos que pertenezcan a la categoria x o y
+delete from Contactos_copia where Categoria = 'TRA' or Categoria = 'ESC';
+--18. Visualiza de la tabla contactos_copia aquellos que pertenezcan a la categoria x e y. Para ello usa la sentencia 
+select * from Contactos_copia where Categoria = 'FAM' and Categoria = 'AMG';
+--19. Elimina de la tabla contactos _copia aquellos que pertenezcan a la categoria x e y
+delete from Contactos_copia where Categoria = 'TRA' and Categoria = 'ESC';
+--20. Visualiza de la tabla contactos_copia aquellos que no pertenezcan a la categoria x. Para ello usa la sentencia
+select * from Contactos_copia where Categoria <> 'AMG';
+--21. Elimina de la tabla contactos _copia aquellos que no pertenezcan a la categoria x
+delete from Contactos_copia where Categoria <> 'AMG';
+--22. Inserta un registro en la tabla contactos_copia
+insert into Contactos_copia (Nombre, Apellidos, DNI, Telefono, Ecorreo, Fechacumple, Direccion, Poblacion, Provincia, Categoria, CodigoPostal, Deuda) values 
+	('NuevoNombre', 'NuevoApellido', '1234567890', '123456789', 'correo@example.com', getdate (), 'NuevaDirección', 'NuevaCiudad', 0, 'YOW', '12345', 0.00);
+select * from Contactos_copia
