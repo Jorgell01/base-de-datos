@@ -1,0 +1,49 @@
+--creamos una base de datos
+create database nombrebasededatos
+  go 
+  use nombrebasededatos
+
+--crear tabla
+create table NOMBRETABLA (nombredecampo tipodedato (int,varchar(numero de tamaño),char(),int identity, date, numeric(cantidad de digitos enteros, cantidad de digitos decimales), decimal(), bit,) 
+   constraint nombredecontrain tipodeconstrain...,
+   nombrecampo2  tipoddecampo...
+);
+--tipos de contraint
+constraint pk_NOMBRETABLA primary key(nombredecampo, nombredecampo2) 
+constraint uk_nombredecampo unique (nombredecampo)
+constraint fk_nombredecampo_NOMBRETABLA foreign key  (nombredecampo) references NOMBRETABLA (nombredecampode la tabla de referencia)
+constraint ck_nombredecampo check ((nombredecampo < 1) and (condicion1)   or (condicion2))
+constraint df_nombredecampo default 'valor entre comillas simples' for nombredecampo(sino esta en linea con el campo) 
+--alterar las tablas
+alter table NOMBRETABLA add nombredecampo3 tipodedato
+alter table NOMBRETABLA drop column nombredecampo3
+alter table NOMBRETABLA alter column nombredecampo2 tipodedatonuevo
+alter table NOMBRETABLA add constraint...
+alter table NOMBRETABLA drop contraint nombredecontraint
+--alterar el nombre de una columna
+exec sp_rename 'NOMBRETABLA.nombredecampo', 'nombredecamponuevo'
+
+--insetar datos
+insert into NOMBRETABLA(nombredecamponuevo, nombredecampo,...) valores en orden
+values ('nombresdevalores','nombresdevalores2',...)mismo orden que los campos entre comilla simples
+--insetar datos de otra table
+insert into NOMBRETABLA select*from NOMBRETABLA2 
+
+--borrado de datos
+delete from NOMBRETABLA 
+where condicion 
+
+--se carga todos los valores cuando no hay restriccion
+truncate table NOMBRETABLA  
+
+--modificar datos
+update from NOMBRETABLA
+set nombredecampo = valorasignado,nombredecampo2=valorasignado2 
+where condicion2(codigodecliente 2)
+
+--mirar la tabla
+select*from NOMBRETABLA
+where condiciondevista
+
+--crear una tabla con datos de otra tabla
+select*into nombredelatablaNOMBRETABLA3 from NOMBRETABLA 
