@@ -1,0 +1,86 @@
+--1. Inserta un registro en "residencias" con cantidad de plazas y género sus valores por defecto:
+INSERT INTO residencias (nomResidencia, codUniversidad, precioMensual, comedor, cantidadPlazas, nombreDirector, genero) 
+VALUES ('Complutense', 'UCM', 800, 1, default, 'Mazu', default);
+
+--2. Inserta un estudiante en "estudiantes" con sexo por defecto:
+INSERT INTO estudiantes (codEstudiante, nomEstudiante, dni, telefono, email, sexo) 
+VALUES (6, 'Gilberto', 'DNI666666', '666666666', 'mambo@estudiante.com', default);
+
+--3. Haz una copia de la tabla "residencias" con `SELECT INTO` en una nueva tabla llamada "residencias_copia":
+SELECT * INTO residencias_copia FROM residencias;
+
+--4. Haz una copia de la tabla "estancias" con `SELECT INTO` en una nueva tabla llamada "estancias_copia":
+SELECT * INTO estancias_copia FROM estancias;
+
+--5. En la tabla "residencias_copia", elimina la última residencia insertada:
+DELETE FROM residencias_copia WHERE (codResidencia = 7)
+
+--6. Enlaza con claves foráneas las dos tablas creadas:
+-- Tabla residencias_copia
+ALTER TABLE residencias_copia
+ADD CONSTRAINT FK_codUniversidad_copia FOREIGN KEY (codUniversidad) REFERENCES universidades(codUniversidad);
+
+-- Tabla estancias_copia
+ALTER TABLE estancias_copia
+ADD CONSTRAINT FK_codEstudiante_copia FOREIGN KEY (codEstudiante) REFERENCES estudiantes(codEstudiante);
+
+ALTER TABLE estancias_copia
+ADD CONSTRAINT FK_codResidencia_copia FOREIGN KEY (codResidencia) REFERENCES residencias(codResidencia);
+
+--7. En la tabla "residencias_copia", intenta eliminar una residencia que esté en "estancias_copia" (esto generará un error si hay dependencias):
+-- Esto generará un error si hay dependencias
+DELETE FROM residencias_copia WHERE codResidencia IN (SELECT DISTINCT codResidencia FROM estancias_copia);
+
+--8. Elimina todos los registros de "estancias_copia" de dos modos:
+   - Modo 1: Elimina todos los registros de "estancias_copia" sin condiciones.
+
+   DELETE FROM estancias_copia;
+   
+   - Modo 2: Elimina solo los registros con observaciones nulas en "estancias_copia".
+
+   DELETE FROM estancias_copia WHERE observaciones IS NULL;
+   
+--9. Inserta en la tabla "estancias_copia" todos los registros que están en la tabla "estancias":
+INSERT INTO estancias_copia
+SELECT * FROM estancias;
+
+--10. Modifica el nombre de la residencia con código X en la tabla "residencias_copia":
+UPDATE residencias_copia
+SET nomResidencia = 'Loleros'
+WHERE codResidencia = 3;
+
+
+--11. En la tabla "residencias_copia", incrementa en 10 el precio a todas las residencias:
+UPDATE residencias_copia
+SET precioMensual = precioMensual + 10;
+
+--12. En la tabla "residencias_copia", incrementa el precio en un 10% a todas las residencias:
+UPDATE residencias_copia
+SET precioMensual = precioMensual * 1.10;
+
+--13. En la tabla "residencias_copia", incrementa el precio en 15 a todas las residencias de género masculino:
+UPDATE residencias_copia
+SET precioMensual = precioMensual + 15
+WHERE genero = 'masculino';
+
+--14. Modifica el precio de la residencia con código X en "residencias_copia":
+UPDATE residencias_copia
+SET precioMensual = 950
+WHERE codResidencia = 6;
+
+--15. Modifica el precio en la tabla "estancias_copia" para la residencia X, estudiante X y fecha de inicio X:
+UPDATE estancias_copia
+SET preciopagado = 2300
+WHERE codResidencia = 2 AND codEstudiante = 1 AND fechaInicio = '2023-09-01';
+
+--16. Incrementa el precio en 5 a todas las estancias de la residencia x
+UPDATE estancias_copia
+SET preciopagado = 2000 + 5
+WHERE codResidencia = 4;
+
+--17. Decrementa el precio en 10 a todas las estancias del estudiante x
+UPDATE estancias_copia
+SET preciopagado = 2800 - 10
+WHERE codEstudiante = 2;
+
+select * from residencias
