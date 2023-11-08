@@ -1,0 +1,27 @@
+INSERT INTO universidades (codUniversidad, nomUniversidad, telefono) VALUES
+    ('UCM', 'Madrid', '123456789'),
+    ('USAL', 'Salamanca', '987654321'),
+    ('ULL', 'Tenerife', '555555555'),
+    ('US', 'Sevilla', '111122233'),
+    ('UB', 'Barcelona', '777777777');
+
+INSERT INTO residencias (nomResidencia, codUniversidad, precioMensual, comedor, cantidadPlazas, nombreDirector, genero) VALUES
+    ('Manicomio', 'UCM', 800, 1, 150, 'Mazu', 'mixto'),
+    ('Loquero', 'USAL', 950, 0, 120, 'Rober', 'masculino'),
+    ('Psiquiatrico', 'ULL', 850, 1, 100, 'Dani', 'femenino'),
+    ('Asilo', 'US', 900, 1, 180, 'Ismael', 'mixto'),
+    ('Tanatorio', 'UB', 750, 0, 130, 'Alba', 'mixto');
+
+INSERT INTO estudiantes (codEstudiante, nomEstudiante, dni, telefono, email, sexo) VALUES
+    (1, 'Nuria', 'DNI111111', '111111111', 'cachorrita@hotmail.com', 'F'),
+    (2, 'Ruben', 'DNI222222', '222222222', 'cumalat@egmail.com', 'M'),
+    (3, 'Pude', 'DNI333333', '333333333', 'africa@gmail.es', 'M'),
+    (4, 'Victor', 'DNI444444', '444444444', 'pssstin@outlook.com', 'M'),
+    (5, 'Emma', 'DNI555555', '555555555', 'kpop@hotmail.com', 'F');
+
+INSERT INTO estancias (codEstudiante, codResidencia, fechaInicio, fechaFin, preciopagado, observaciones, numhabitacion) VALUES
+    (1, 2, '2023-09-01', '2023-12-15', 2500, 'Estancia larga', 101),
+    (2, 3, '2023-08-20', '2023-12-30', 2800, NULL, 202),
+    (3, 4, '2023-09-05', '2023-11-30', 2000, 'Estancia corta', 95),
+    (4, 5, '2023-09-15', '2024-01-31', 3500, NULL, 102),
+    (5, 6, '2023-08-10', '2023-12-10', 2200, 'Estancia sin problemas', 204);
